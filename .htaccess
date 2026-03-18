@@ -1,0 +1,16 @@
+############################################
+## Redirect to pub folder
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirect /admin* to /pub/admin*
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteRule ^(.*)$ pub/index.php [L]
+    
+    # Redirect everything except pub folder to /pub
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/pub/
+    RewriteRule ^(.*)$ /magento/pub/$1 [L]
+</IfModule>

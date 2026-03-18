@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Search Engine: Start Elasticsearch",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/search-engine/start-elasticsearch.ps1"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Search Engine: Stop Elasticsearch",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/search-engine/stop-elasticsearch.ps1"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Search Engine: Reindex Catalog Search",
+      "type": "shell",
+      "command": "php",
+      "args": [
+        "bin/magento",
+        "indexer:reindex",
+        "catalogsearch_fulltext"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

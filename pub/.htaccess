@@ -1,0 +1,48 @@
+############################################
+## Magento 2 .htaccess Configuration
+
+# Use PHP 7
+<IfModule mod_php7.c>
+    php_value memory_limit 756M
+    php_value max_execution_time 18000
+</IfModule>
+
+# DirectoryIndex
+DirectoryIndex index.php
+
+# Enable mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /magento/pub/
+
+    # Redirect legacy index.php URLs to clean URLs.
+    RewriteCond %{THE_REQUEST} \s/+magento/pub/index\.php/([^\s\?]+) [NC]
+    RewriteRule ^index\.php/(.*)$ /magento/pub/$1 [R=301,L]
+
+    # Static resources: remove version signature and serve via static.php when file is not materialized yet.
+    RewriteRule ^static/version[0-9]+/(.*)$ static/$1 [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-l
+    RewriteRule ^static/(.*)$ static.php?resource=$1 [L]
+
+    # Media resources can be served through get.php when needed (e.g. DB storage mode).
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-l
+    RewriteRule ^media/(.*)$ get.php?resource=$1 [L]
+    
+    # Don't rewrite for existing files/directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Rewrite all other requests to index.php
+    RewriteRule ^(.*)$ index.php [L]
+</IfModule>
+
+# Security headers
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+
+# Disable directory listing
+Options -Indexes

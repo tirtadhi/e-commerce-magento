@@ -1,0 +1,44 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/tasks.json
+
+# Git
+.git/
+
+# Composer auth and local env secrets
+auth.json
+app/etc/env.php
+
+# Magento generated/runtime directories
+/generated/*
+!/generated/.htaccess
+!/generated/code/.htaccess
+!/generated/metadata/.htaccess
+
+/var/*
+!/var/.htaccess
+!/var/.gitignore
+!/var/importexport/.htaccess
+!/var/import_history/.htaccess
+!/var/session/.htaccess
+
+/pub/static/*
+!/pub/static/.htaccess
+
+/pub/media/*
+!/pub/media/.htaccess
+
+# Build/cache artifacts
+/node_modules/
+/vendor/
+/.phpunit.result.cache
+/.php_cs.cache
+
+# Runtime helper artifacts
+/tmp*
+*.log
+
+# Docker/local overrides
+/docker-compose.override.yml

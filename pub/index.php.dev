@@ -1,0 +1,23 @@
+<?php
+/**
+ * Magento Application entry point
+ * Workaround for installation check issue in developer mode
+ */
+
+if (isset($_SERVER['MAGE_RUN_CODE'])) {
+    $_SERVER['MAGE_RUN_CODE'] = $_SERVER['MAGE_RUN_CODE'];
+} else {
+    $_SERVER['MAGE_RUN_CODE'] = 'default';
+}
+
+if (isset($_SERVER['MAGE_RUN_TYPE'])) {
+    $_SERVER['MAGE_RUN_TYPE'] = $_SERVER['MAGE_RUN_TYPE'];
+} else {
+    $_SERVER['MAGE_RUN_TYPE'] = 'store';
+}
+
+// Set to developer mode to skip installation requirement
+$_SERVER['MAGE_REQUIRE_IS_INSTALLED'] = null;
+
+require dirname(__FILE__) . '/index.php.original';
+?>
