@@ -1,6 +1,6 @@
 # Magento 2.4.7 (Windows + Laragon)
 
-Panduan ini berisi langkah menjalankan project Magento dari nol sampai siap dipresentasikan.
+Panduan ini berisi langkah setup, menjalankan, dan maintenance project Magento.
 
 ## 1. Ringkasan
 
@@ -128,11 +128,11 @@ php bin/magento cache:flush
 ## 7. Catatan Penting Project Ini
 
 - Instance ini sudah berjalan untuk frontend, register, admin, indexing, dan cron.
-- Beberapa command setup/module standar Magento tidak tersedia pada build ini, jadi fokus demo pada flow aplikasi yang berjalan.
+- Beberapa command setup/module standar Magento tidak tersedia pada build ini, jadi gunakan command yang memang tersedia di lingkungan ini.
 
-## 8. Checklist Presentasi (H-1 / H-0)
+## 8. Checklist Operasional
 
-Jalankan ini sebelum presentasi:
+Jalankan ini setelah pull terbaru atau sebelum mulai development:
 
 ```powershell
 cd c:\laragon\www\magento
