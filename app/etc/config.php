@@ -30,6 +30,7 @@ return [
         'Magento_SalesSequence' => 1,
         'Magento_Quote' => 1,
         'Magento_Sales' => 1,
+        'Magento_CatalogRule' => 1,
         'Magento_Checkout' => 1,
         'Magento_Payment' => 1,
         'Magento_OfflinePayments' => 1,
@@ -50,7 +51,9 @@ return [
         'Magento_Cron' => 1,
         'Magento_AdminNotification' => 1,
         'Magento_ReleaseNotification' => 1,
+        'Magento_Reports' => 1,
         'Magento_Search' => 1,
+        'Magento_Integration' => 1,
         'Magento_Webapi' => 1,
         'Magento_Translation' => 1
     ]
