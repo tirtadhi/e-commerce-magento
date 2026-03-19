@@ -1,128 +1,150 @@
-# ✅ MAGENTO 2.4.7 - COMPLETE & FULLY FUNCTIONAL
+# Magento 2.4.7 (Windows + Laragon)
 
-## System Status: 🟢 READY FOR PRODUCTION
+Panduan ini berisi langkah menjalankan project Magento dari nol sampai siap dipresentasikan.
 
-Your Magento 2.4.7e-commerce platform is **COMPLETE, TESTED, and OPERATIONAL**.
+## 1. Ringkasan
 
----
+- Framework: Magento Open Source 2.4.7
+- PHP: 8.1/8.2/8.3 (sesuai `composer.json`)
+- Database: MySQL (`magento2`)
+- Search Engine: Elasticsearch 7 (`localhost:9200`)
+- Root URL: `http://localhost/magento/pub/`
+- Admin URL: `http://localhost/magento/pub/admin_v6zjrur/`
 
-## 🎯 Quick Access
+## 2. Prasyarat
 
-**Frontend Store**:
-```
-http://localhost/magento/pub/
-```
+- Windows + Laragon aktif (Apache/Nginx + MySQL)
+- PHP CLI tersedia di terminal
+- Composer tersedia
+- Database `magento2` sudah ada
+- Elasticsearch berjalan di `http://localhost:9200`
 
-**Admin Panel**:
-```
-http://localhost/magento/pub/admin_v6zjrur/
-```
+## 3. Menjalankan Project
 
----
+Jalankan dari root project:
 
-## ✨ What You Have
-
-### E-Commerce Features
-- ✅ 10 Sample Products
-- ✅ 8 Product Categories
-- ✅ Shopping Cart
-- ✅ Checkout Process
-- ✅ Payment Integration (Check/Money Order)
-- ✅ Shipping Methods (Flat Rate)
-- ✅ Order Management
-- ✅ Customer Accounts
-
-### Technology
-- ✅ Magento 2.4.7 Community Edition
-- ✅ PHP 8.3.11
-- ✅ MySQL 8.0.30
-- ✅ Apache 2.4
-
----
-
-## 🔧 All Issues Resolved ✅
-
-- ✅ Circular Dependency - Fixed
-- ✅ Missing Interceptors - Fixed
-- ✅ Database Connection - Verified
-- ✅ Frontend Errors - Resolved
-- ✅ Module Configuration - Complete
-
----
-
-## 📚 Documentation Files
-
-- **QUICK_START.md** - Fast reference
-- **IMPLEMENTATION_GUIDE.md** - Technical details
-- **SETUP_COMPLETE.md** - Setup summary
-- **FIXES_APPLIED.md** - Issues & solutions
-
----
-
-## 🚀 Getting Started
-
-### Browse Your Store
-1. Go to http://localhost/magento/pub/
-2. Browse products
-3. Add to cart
-4. Checkout
-
-### Admin Functions
-1. Go to http://localhost/magento/pub/admin_v6zjrur/
-2. Manage products, orders, and settings
-
-### Test System
-```bash
+```powershell
 cd c:\laragon\www\magento
-php test_bootstrap.php
 ```
 
----
+### 3.1 Pastikan Elasticsearch hidup
 
-## 💡 Quick Commands
+Opsi VS Code Task:
 
-```bash
-# Clear cache
-rm -rf var/cache/*
+- `Search Engine: Start Elasticsearch`
 
-# View logs
-cat var/log/system.log
+Atau cek manual:
 
-# Warm up system
-php warm_up.php
+```powershell
+try { (Invoke-WebRequest -Uri http://localhost:9200 -UseBasicParsing).StatusCode } catch { $_.Exception.Message }
 ```
 
----
+Jika sukses, akan keluar `200`.
 
-## 📊 System Info
+### 3.2 Jalankan validasi dasar Magento
 
-- **Version**: 2.4.7 Community Edition
-- **Database**: magento2 (MySQL 8.0.30)
-- **Mode**: Developer
-- **Tables**: 346
-- **Products**: 10
-- **Categories**: 8
-- **Status**: ✅ Operational
+```powershell
+php bin/magento --version
+php bin/magento indexer:status
+```
 
----
+Jika ada indexer `Reindex required`, jalankan:
 
-## ✅ Everything Works
+```powershell
+php bin/magento indexer:reindex
+```
 
-- [x] Database connected
-- [x] Products available
-- [x] Categories organized
-- [x] Payment method ready
-- [x] Shipping configured
-- [x] Frontend active
-- [x] Admin panel ready
-- [x] All tests passing
+### 3.3 Jalankan cron manual (untuk update job terjadwal)
 
----
+```powershell
+php bin/magento cron:run
+php bin/magento cron:run
+```
 
-## 🎉 You're Ready!
+### 3.4 Flush cache
 
-Your Magento 2.4.7 e-commerce platform is complete and ready to use.
+```powershell
+php bin/magento cache:flush
+```
 
-**Start shopping:** http://localhost/magento/pub/
+### 3.5 Buka aplikasi
 
-🚀 **Enjoy your fully functional e-commerce store!**
+- Frontend: `http://localhost/magento/pub/`
+- Register customer: `http://localhost/magento/pub/customer/account/create/`
+- Admin: `http://localhost/magento/pub/admin_v6zjrur/`
+
+## 4. Login Admin
+
+Credential yang saat ini dipakai lokal:
+
+- Username: `admin`
+- Password: `Admin@12345`
+
+Disarankan ganti password setelah login pertama.
+
+## 5. Command Harian yang Sering Dipakai
+
+```powershell
+# Cek kesehatan indexer
+php bin/magento indexer:status
+
+# Reindex search saja
+php bin/magento indexer:reindex catalogsearch_fulltext
+
+# Jalankan cron
+php bin/magento cron:run
+
+# Flush cache
+php bin/magento cache:flush
+
+# Cek log error
+Get-Content var/log/exception.log -Tail 100
+Get-Content var/log/system.log -Tail 100
+```
+
+## 6. Troubleshooting Cepat
+
+### 6.1 Dashboard admin menampilkan "One or more indexers are invalid"
+
+```powershell
+php bin/magento indexer:reindex
+php bin/magento cron:run
+```
+
+### 6.2 Halaman create account tampil tanpa form
+
+- Cek `var/log/exception.log`
+- Lalu flush cache:
+
+```powershell
+php bin/magento cache:flush
+```
+
+### 6.3 Muncul pesan "More permissions are needed to access this"
+
+- Biasanya karena ACL admin tidak sinkron.
+- Pastikan user admin terhubung ke role `Administrators` dan punya rule `Magento_Backend::all`.
+
+## 7. Catatan Penting Project Ini
+
+- Instance ini sudah berjalan untuk frontend, register, admin, indexing, dan cron.
+- Beberapa command setup/module standar Magento tidak tersedia pada build ini, jadi fokus demo pada flow aplikasi yang berjalan.
+
+## 8. Checklist Presentasi (H-1 / H-0)
+
+Jalankan ini sebelum presentasi:
+
+```powershell
+cd c:\laragon\www\magento
+php bin/magento cache:flush
+php bin/magento indexer:status
+php bin/magento cron:run
+```
+
+Checklist:
+
+- Frontend homepage terbuka
+- Halaman register customer menampilkan form lengkap
+- Login admin berhasil
+- Dashboard admin terbuka tanpa error popup
+- Tidak ada error baru di `var/log/exception.log`
