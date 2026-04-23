@@ -54,6 +54,10 @@ return [
         'Magento_Reports' => 1,
         'Magento_Search' => 1,
         'Magento_Integration' => 1,
+        'Magento_MessageQueue' => 1,
+        'Magento_MysqlMq' => 1,
+        'Magento_AsynchronousOperations' => 1,
+        'Magento_WebapiAsync' => 1,
         'Magento_Webapi' => 1,
         'Magento_Translation' => 1
     ]

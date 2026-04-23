@@ -86,8 +86,12 @@ class Options implements \JsonSerializable
     {
         if ($this->options === null) {
             $options = $this->collectionFactory->create()->setRealGroupsFilter()->toOptionArray();
+            $this->options = [];
             $this->prepareData();
             foreach ($options as $optionCode) {
+                if (!isset($optionCode['value'], $optionCode['label'])) {
+                    continue;
+                }
                 $this->options[$optionCode['value']] = [
                     'type' => 'customer_group_' . $optionCode['value'],
                     'label' => __($optionCode['label']),

@@ -97,7 +97,7 @@ class Storage extends AbstractModel
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\MediaStorage\Helper\File\Storage $coreFileStorage
+    * @param \Magento\MediaStorage\Helper\File\Storage\Proxy $coreFileStorage
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $coreConfig
      * @param \Magento\MediaStorage\Model\File\Storage\Flag $fileFlag
@@ -112,7 +112,7 @@ class Storage extends AbstractModel
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
-        \Magento\MediaStorage\Helper\File\Storage $coreFileStorage,
+        \Magento\MediaStorage\Helper\File\Storage\Proxy $coreFileStorage,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\App\Config\ScopeConfigInterface $coreConfig,
         \Magento\MediaStorage\Model\File\Storage\Flag $fileFlag,

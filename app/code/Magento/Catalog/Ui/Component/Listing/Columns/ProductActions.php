@@ -53,12 +53,16 @@ class ProductActions extends Column
             $storeId = $this->context->getFilterParam('store_id');
 
             foreach ($dataSource['data']['items'] as &$item) {
+                $productLabel = isset($item['name']) && $item['name'] !== ''
+                    ? (string)$item['name']
+                    : (isset($item['sku']) ? (string)$item['sku'] : (string)__('this product'));
+
                 $item[$this->getData('name')]['edit'] = [
                     'href' => $this->urlBuilder->getUrl(
                         'catalog/product/edit',
                         ['id' => $item['entity_id'], 'store' => $storeId]
                     ),
-                    'ariaLabel' => __('Edit ') . $item['name'],
+                    'ariaLabel' => __('Edit ') . $productLabel,
                     'label' => __('Edit'),
                     'hidden' => false,
                 ];

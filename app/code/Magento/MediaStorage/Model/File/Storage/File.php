@@ -64,14 +64,16 @@ class File
     private $_fileUtility;
 
     /**
+     * Use Database\Proxy to avoid eager instantiation cycle with Database helper.
+     *
      * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\MediaStorage\Helper\File\Storage\Database $storageHelper
+     * @param \Magento\MediaStorage\Helper\File\Storage\Database\Proxy $storageHelper
      * @param \Magento\MediaStorage\Helper\File\Media $mediaHelper
      * @param \Magento\MediaStorage\Model\ResourceModel\File\Storage\File $fileUtility
      */
     public function __construct(
         \Psr\Log\LoggerInterface $logger,
-        \Magento\MediaStorage\Helper\File\Storage\Database $storageHelper,
+        \Magento\MediaStorage\Helper\File\Storage\Database\Proxy $storageHelper,
         \Magento\MediaStorage\Helper\File\Media $mediaHelper,
         \Magento\MediaStorage\Model\ResourceModel\File\Storage\File $fileUtility
     ) {

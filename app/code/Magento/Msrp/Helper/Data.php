@@ -84,7 +84,7 @@ class Data extends AbstractHelper
         $this->priceCurrency = $priceCurrency;
         $this->productRepository = $productRepository;
         $this->msrpPriceCalculator = $msrpPriceCalculator
-            ?: ObjectManager::getInstance()->get(MsrpPriceCalculatorInterface::class);
+            ?: ObjectManager::getInstance()->get(\Magento\Msrp\Pricing\MsrpPriceCalculator::class);
     }
 
     /**

@@ -18,17 +18,17 @@ class Options
     protected $config;
 
     /**
-     * @var \Magento\Msrp\Helper\Data
+    * @var \Magento\Msrp\Helper\Data\Proxy
      */
     protected $msrpData;
 
     /**
      * @param \Magento\Msrp\Model\Config $config
-     * @param \Magento\Msrp\Helper\Data $msrpData
+     * @param \Magento\Msrp\Helper\Data\Proxy $msrpData
      */
     public function __construct(
         \Magento\Msrp\Model\Config $config,
-        \Magento\Msrp\Helper\Data $msrpData
+        \Magento\Msrp\Helper\Data\Proxy $msrpData
     ) {
         $this->config = $config;
         $this->msrpData = $msrpData;
