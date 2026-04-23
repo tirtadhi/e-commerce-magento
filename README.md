@@ -1,150 +1,176 @@
-# Magento 2.4.7 (Windows + Laragon)
+# Magento 2.4.7 - Laragon + Docker Setup
 
-Panduan ini berisi langkah setup, menjalankan, dan maintenance project Magento.
+Panduan ini mencakup instalasi lengkap project Magento untuk dua mode:
 
-## 1. Ringkasan
+1. Mode Laragon (native Windows)
+2. Mode Docker (service database + search engine)
 
-- Framework: Magento Open Source 2.4.7
-- PHP: 8.1/8.2/8.3 (sesuai `composer.json`)
-- Database: MySQL (`magento2`)
-- Search Engine: Elasticsearch 7 (`localhost:9200`)
-- Root URL: `http://localhost/magento/pub/`
-- Admin URL: `http://localhost/magento/pub/admin_v6zjrur/`
+## 1. Stack yang Dipakai
 
-## 2. Prasyarat
+- Magento Open Source 2.4.7
+- PHP 8.1/8.2/8.3 (sesuai composer.json)
+- MySQL 8
+- Elasticsearch 7.17
+- Web server lokal Laragon (Apache/Nginx)
 
-- Windows + Laragon aktif (Apache/Nginx + MySQL)
-- PHP CLI tersedia di terminal
-- Composer tersedia
-- Database `magento2` sudah ada
-- Elasticsearch berjalan di `http://localhost:9200`
+## 2. Struktur Tambahan di Repo
 
-## 3. Menjalankan Project
+- docker-compose.yml: service Docker untuk MySQL + Elasticsearch (+ dashboard opsional)
+- docker/.env.docker.example: template environment Docker
+- scripts/database/export-laragon-db.ps1: export DB dari Laragon
+- scripts/database/import-docker-db.ps1: import DB ke MySQL Docker
 
-Jalankan dari root project:
+## 3. Prasyarat
+
+### 3.1 Untuk Mode Laragon
+
+- Laragon terinstal
+- PHP CLI dan Composer tersedia
+- MySQL Laragon aktif
+- Project berada di c:\laragon\www\magento
+
+### 3.2 Untuk Mode Docker
+
+- Docker Desktop aktif
+- Port berikut kosong: 3307, 9200, 5601
+
+## 4. Instalasi Lengkap Mode Laragon
+
+Jalankan di root project:
 
 ```powershell
 cd c:\laragon\www\magento
 ```
 
-### 3.1 Pastikan Elasticsearch hidup
-
-Opsi VS Code Task:
-
-- `Search Engine: Start Elasticsearch`
-
-Atau cek manual:
+Pastikan dependency tersedia:
 
 ```powershell
-try { (Invoke-WebRequest -Uri http://localhost:9200 -UseBasicParsing).StatusCode } catch { $_.Exception.Message }
+composer install
 ```
 
-Jika sukses, akan keluar `200`.
-
-### 3.2 Jalankan validasi dasar Magento
+Jika database sudah ada, lanjut ke validasi:
 
 ```powershell
 php bin/magento --version
 php bin/magento indexer:status
+php bin/magento cache:flush
+php bin/magento cron:run
+php bin/magento cron:run
 ```
 
-Jika ada indexer `Reindex required`, jalankan:
+Buka aplikasi:
+
+- Frontend: http://localhost/magento/pub/
+- Register: http://localhost/magento/pub/customer/account/create/
+- Admin: http://localhost/magento/pub/admin_v6zjrur/
+
+## 5. Export Database dari Laragon (Untuk Upload/Backup)
+
+Script export:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/database/export-laragon-db.ps1
+```
+
+Output default:
+
+- database/magento2-laragon.sql
+
+Jika butuh nama database lain:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/database/export-laragon-db.ps1 -DatabaseName magento2
+```
+
+## 6. Menjalankan Service Docker
+
+Salin file env Docker:
+
+```powershell
+Copy-Item docker/.env.docker.example docker/.env.docker -Force
+```
+
+Jalankan service:
+
+```powershell
+docker compose --env-file docker/.env.docker up -d
+```
+
+Cek status:
+
+```powershell
+docker compose --env-file docker/.env.docker ps
+```
+
+Endpoint Docker:
+
+- MySQL: 127.0.0.1:3307
+- Elasticsearch: http://127.0.0.1:9200
+- OpenSearch Dashboards (opsional): http://127.0.0.1:5601
+
+## 7. Import Dump DB ke MySQL Docker
+
+Jika sudah punya file dump di database/magento2-laragon.sql:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/database/import-docker-db.ps1
+```
+
+Script akan membuat database jika belum ada lalu import isi dump.
+
+## 8. Menyambungkan Magento ke MySQL Docker
+
+Update app/etc/env.php bagian koneksi default:
+
+- host: 127.0.0.1
+- dbname: magento2
+- username: magento
+- password: magento
+
+Lalu jalankan:
+
+```powershell
+php bin/magento cache:flush
 php bin/magento indexer:reindex
 ```
 
-### 3.3 Jalankan cron manual (untuk update job terjadwal)
+## 9. Elasticsearch Task (VS Code)
+
+Task yang tersedia:
+
+- Search Engine: Start Elasticsearch
+- Search Engine: Stop Elasticsearch
+- Search Engine: Reindex Catalog Search
+
+Catatan: Jika memakai Elasticsearch dari Docker, task start/stop lokal tidak wajib dipakai.
+
+## 10. Operasional Harian
 
 ```powershell
-php bin/magento cron:run
-php bin/magento cron:run
-```
-
-### 3.4 Flush cache
-
-```powershell
-php bin/magento cache:flush
-```
-
-### 3.5 Buka aplikasi
-
-- Frontend: `http://localhost/magento/pub/`
-- Register customer: `http://localhost/magento/pub/customer/account/create/`
-- Admin: `http://localhost/magento/pub/admin_v6zjrur/`
-
-## 4. Login Admin
-
-Credential yang saat ini dipakai lokal:
-
-- Username: `admin`
-- Password: `Admin@12345`
-
-Disarankan ganti password setelah login pertama.
-
-## 5. Command Harian yang Sering Dipakai
-
-```powershell
-# Cek kesehatan indexer
 php bin/magento indexer:status
-
-# Reindex search saja
-php bin/magento indexer:reindex catalogsearch_fulltext
-
-# Jalankan cron
 php bin/magento cron:run
-
-# Flush cache
 php bin/magento cache:flush
-
-# Cek log error
 Get-Content var/log/exception.log -Tail 100
 Get-Content var/log/system.log -Tail 100
 ```
 
-## 6. Troubleshooting Cepat
+## 11. Troubleshooting Singkat
 
-### 6.1 Dashboard admin menampilkan "One or more indexers are invalid"
+Jika indexer invalid:
 
 ```powershell
 php bin/magento indexer:reindex
 php bin/magento cron:run
 ```
 
-### 6.2 Halaman create account tampil tanpa form
-
-- Cek `var/log/exception.log`
-- Lalu flush cache:
+Jika form register tidak muncul:
 
 ```powershell
+Get-Content var/log/exception.log -Tail 100
 php bin/magento cache:flush
 ```
 
-### 6.3 Muncul pesan "More permissions are needed to access this"
+Jika akses admin ditolak karena permission:
 
-- Biasanya karena ACL admin tidak sinkron.
-- Pastikan user admin terhubung ke role `Administrators` dan punya rule `Magento_Backend::all`.
-
-## 7. Catatan Penting Project Ini
-
-- Instance ini sudah berjalan untuk frontend, register, admin, indexing, dan cron.
-- Beberapa command setup/module standar Magento tidak tersedia pada build ini, jadi gunakan command yang memang tersedia di lingkungan ini.
-
-## 8. Checklist Operasional
-
-Jalankan ini setelah pull terbaru atau sebelum mulai development:
-
-```powershell
-cd c:\laragon\www\magento
-php bin/magento cache:flush
-php bin/magento indexer:status
-php bin/magento cron:run
-```
-
-Checklist:
-
-- Frontend homepage terbuka
-- Halaman register customer menampilkan form lengkap
-- Login admin berhasil
-- Dashboard admin terbuka tanpa error popup
-- Tidak ada error baru di `var/log/exception.log`
+- Pastikan user admin berada pada role Administrators
+- Pastikan ACL Magento_Backend::all aktif
